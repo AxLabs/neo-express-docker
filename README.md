@@ -13,3 +13,9 @@ docker run -it ghcr.io/axlabs/neo-express-docker/neo-express-docker:latest
 ```shell
 docker build -t ghcr.io/axlabs/neo-express-docker/neo-express-docker:latest ./
 ```
+
+## Push
+
+```shell
+docker push ghcr.io/axlabs/neo-express-docker/neo-express-docker:latest
+```
