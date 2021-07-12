@@ -1,5 +1,13 @@
 FROM mcr.microsoft.com/dotnet/sdk:5.0 as dotnet-builder
 
+# install dependencies
+RUN apt-get update -y && \
+    apt-get install -y --no-install-recommends \
+    # Neo Blockchain Toolkit dependencies:
+    libsnappy-dev \
+    libc6-dev \
+    librocksdb-dev
+
 WORKDIR /app
 
 ENV HOME=/root
