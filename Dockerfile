@@ -47,4 +47,7 @@ RUN dotnet tool install --global Neo.Express \
         --add-source https://pkgs.dev.azure.com/ngdenterprise/Build/_packaging/public%40Local/nuget/v3/index.json \
         --version 2.0.50-preview
 
-ENTRYPOINT ["neoxp", "run"]
+ADD init_and_run_neoxp.sh /app/init_and_run_neoxp.sh
+RUN chmod +x /app/init_and_run_neoxp.sh 
+
+ENTRYPOINT ["/app/init_and_run_neoxp.sh"]
