@@ -43,9 +43,7 @@ RUN ln -s /usr/share/dotnet/dotnet /usr/bin/dotnet && \
     ln -s /usr/share/dotnet/dotnet /usr/local/bin/dotnet
 
 # Install: Neo Express
-RUN dotnet tool install --global Neo.Express \
-        --add-source https://pkgs.dev.azure.com/ngdenterprise/Build/_packaging/public%40Local/nuget/v3/index.json \
-        --version 3.0.5
+RUN dotnet tool install Neo.Express -g
 
 ADD init_and_run_neoxp.sh /app/init_and_run_neoxp.sh
 RUN chmod +x /app/init_and_run_neoxp.sh 
