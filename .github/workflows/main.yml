@@ -1,0 +1,70 @@
+name: Build and Publish container
+
+on:
+  workflow_dispatch:
+    inputs:
+      publish:
+        description: 'Publish to ghcr?'
+        required: false
+        default: 'false'
+      version:
+        description: 'Version in addition to latest?'
+        required: false
+        default: ''
+
+jobs:
+  ghcr_push:
+    runs-on: ubuntu-latest
+    if: github.event.inputs.publish == 'true'
+
+    steps:
+      - name: checkout with submodules
+        uses: actions/checkout@v2
+        with:
+          submodules: recursive
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v1
+
+      - name: Set up Docker Buildx
+        id: buildx
+        uses: docker/setup-buildx-action@v1
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v1
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set variables
+        env:
+          IMAGE_ID_BASE: ghcr.io/axlabs/neo-express-docker
+          VERSION_LATEST: latest
+        run: |
+          echo "IMAGE_ID_BASE=${IMAGE_ID_BASE}" >> $GITHUB_ENV
+          echo "VERSION_LATEST=${VERSION_LATEST}" >> $GITHUB_ENV
+          echo "VERSION_SPECIFIC=${{ github.event.inputs.version }}" >> $GITHUB_ENV
+
+      - name: Build and push image ('latest' tag)
+        run: |
+          echo IMAGE_ID_BASE=$IMAGE_ID_BASE
+          echo VERSION_LATEST=$VERSION_LATEST
+          docker buildx build \
+            --push \
+            --tag $IMAGE_ID_BASE:$VERSION_LATEST \
+            --platform linux/amd64,linux/arm64 \
+            -f ./Dockerfile \
+            ./
+
+      - name: Build and push image (version tag)
+        if: github.event.inputs.version != ''
+        run: |
+          echo IMAGE_ID_BASE=$IMAGE_ID_BASE
+          echo VERSION_SPECIFIC=$VERSION_SPECIFIC
+          docker buildx build \
+            --push \
+            --tag $IMAGE_ID_BASE:$VERSION_SPECIFIC \
+            --platform linux/amd64,linux/arm64 \
+            -f ./Dockerfile \
+            ./ 
